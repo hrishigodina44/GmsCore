@@ -331,7 +331,7 @@ public class AuthManager {
                 .source("android")
                 .app(packageName, getPackageSignature())
                 .email(accountName)
-                .token(getAccountManager().getPassword(getAccount()))
+                .token(getAccountManager().getPassword(account))
                 .service(service)
                 .delegation(delegationType, delegateeUserId)
                 .oauth2Foreground(oauth2Foreground)

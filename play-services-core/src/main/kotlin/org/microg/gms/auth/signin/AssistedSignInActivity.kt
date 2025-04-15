@@ -5,10 +5,12 @@
 
 package org.microg.gms.auth.signin
 
+import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.getSystemService
 import com.google.android.gms.R
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
@@ -78,8 +80,17 @@ class AssistedSignInActivity : AppCompatActivity() {
             return
         }
 
+        val accountManager = getSystemService<AccountManager>() ?: return errorResult(
+            Status(CommonStatusCodes.ERROR, "No account manager.")
+        )
+        val accounts = accountManager.getAccountsByType(AuthConstants.DEFAULT_ACCOUNT_TYPE)
+
         if (beginSignInRequest != null) {
             Log.d(TAG, "beginSignInRequest start")
+            if (accounts.isEmpty()) {
+                errorResult(Status(CommonStatusCodes.ERROR, "accounts is empty."))
+                return
+            }
             val fragment = supportFragmentManager.findFragmentByTag(AssistedSignInFragment.TAG)
             if (fragment != null) {
                 val assistedSignInFragment = fragment as AssistedSignInFragment
@@ -159,13 +170,4 @@ class AssistedSignInActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume")
-        val fragment = supportFragmentManager.findFragmentByTag(AssistedSignInFragment.TAG)
-        if (fragment != null) {
-            val assistedSignInFragment = fragment as AssistedSignInFragment
-            assistedSignInFragment.initView()
-        }
-    }
 }

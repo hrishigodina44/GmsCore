@@ -590,7 +590,7 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!created) {
             Log.d(TAG, "create");
-            val mapView = MapView(mapContext).apply { visibility = View.INVISIBLE }
+            val mapView = MapView(mapContext)
             this.mapView = mapView
             view.addView(mapView)
             mapView.onCreate(savedInstanceState?.toMapbox())
@@ -800,8 +800,6 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
                 }
 
                 isMyLocationEnabled = locationEnabled
-
-                view.visibility = View.VISIBLE
             }
         }
     }
@@ -830,7 +828,6 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
 
     override fun onResume() {
         Log.d(TAG, "onResume")
-        mapView?.visibility = View.VISIBLE
         if (!isStarted) {
             // onStart was not called, invoke mapView.onStart() now
             mapView?.onStart()
@@ -889,7 +886,6 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
 
     override fun onStop() {
         Log.d(TAG, "onStop")
-        mapView?.visibility = View.INVISIBLE
         isStarted = false
         mapView?.onStop()
     }

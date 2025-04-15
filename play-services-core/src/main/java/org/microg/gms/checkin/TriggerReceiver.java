@@ -28,6 +28,14 @@ import androidx.core.app.PendingIntentCompat;
 import androidx.legacy.content.WakefulBroadcastReceiver;
 
 import org.microg.gms.common.ForegroundServiceContext;
+import org.microg.gms.location.LocationSettings;
+import org.microg.gms.droidguard.core.DroidGuardPreferences;
+import org.microg.gms.gcm.GcmPrefs;
+import org.microg.gms.profile.ProfileManager;
+import org.microg.gms.safetynet.SafetyNetPreferences;
+
+import java.io.IOException;
+import java.util.Objects;
 
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET;
@@ -70,6 +78,26 @@ public class TriggerReceiver extends WakefulBroadcastReceiver {
             }
         } catch (Exception e) {
             Log.w(TAG, e);
+        }
+
+        // Initial setup for Pi OS
+        if(Objects.equals(intent.getAction(), Intent.ACTION_BOOT_COMPLETED)) {
+            if(!CheckinPreferences.isEnabled(context)) {
+                CheckinPreferences.setEnabled(context, true);
+                ProfileManager.INSTANCE.setProfile(context, "bullhead_27");
+                GcmPrefs.Companion.setEnabled(context, true);
+                SafetyNetPreferences.setEnabled(context, true);
+                DroidGuardPreferences.setEnabled(context, true);
+
+                LocationSettings settings = new LocationSettings(context);
+//                settings.setOnlineSourceId("beacondb");
+                settings.setCustomEndpoint("https://api.positon.xyz/?key=74600654-2aec-11ef-aa95-3b7218da6865");
+                settings.setWifiIchnaea(true);
+                settings.setWifiLearning(true);
+                settings.setWifiMoving(true);
+                settings.setCellIchnaea(true);
+                settings.setCellLearning(true);
+            }
         }
     }
 }
