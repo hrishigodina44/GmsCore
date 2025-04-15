@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-LOCAL_PATH:= $(call my-dir)
+LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := GmsCore
@@ -27,8 +27,8 @@ gmscore_apk   := $(gmscore_build)/outputs/apk/release/play-services-core-release
 
 $(gmscore_root)/$(gmscore_apk):
 	rm -Rf $(gmscore_root)/$(gmscore_build)
-	mkdir -p $(ANDROID_BUILD_TOP)/$(gmscore_out)
-	ln -s $(ANDROID_BUILD_TOP)/$(gmscore_out) $(ANDROID_BUILD_TOP)/$(gmscore_root)/$(gmscore_build)
+	mkdir -p $(gmscore_out)
+	ln -s $(gmscore_out) $(gmscore_root)/$(gmscore_build)
 	echo "sdk.dir=$(ANDROID_HOME)" > $(gmscore_root)/local.properties
 	cd $(gmscore_root) && git submodule update --recursive --init
 	cd $(gmscore_root)/$(gmscore_dir) && JAVA_TOOL_OPTIONS="$(JAVA_TOOL_OPTIONS) -Dfile.encoding=UTF8" ../gradlew assembleRelease
