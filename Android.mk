@@ -6,6 +6,7 @@ LOCAL_MODULE_CLASS := APPS
 LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
 LOCAL_CERTIFICATE := platform
 LOCAL_PACKAGE_NAME := GmsCore
+gmscore_maven_repo := $(AOSP_TOP)/prebuilts/gradle_cache/maven_repo
 
 gmscore_root := $(LOCAL_PATH)
 gmscore_dir := play-services-core
@@ -32,6 +33,7 @@ $(gmscore_gradle_apk):
 
 	# Write local.properties with sdk path
 	echo "sdk.dir=$(ANDROID_HOME)" > $(PRIVATE_GMSCORE_ROOT)/local.properties
+	echo "sdk.dir=$(TOP)/prebuilts/sdk" > $(PRIVATE_GMSCORE_ROOT)/local.properties
 
 	# Run gradle build
 	cd $(PRIVATE_GMSCORE_ROOT) && \

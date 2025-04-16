@@ -104,6 +104,8 @@ def ourVendingVersionCode = 80000000 + vendingVersionCode * 100 + ourVersionMino
 def ourVendingVersionName = "$ourVersionBase.$vendingVersionCode" + (gitCommitCount > 0 && !gitDirty ? "-$gitCommitCount" : "") + (gitDirty ? "-dirty" : "") + (gitCommitCount > 0 && !gitDirty ? " ($gitCommitId)" : "")
 logger.lifecycle('Starting build for GMS version {} ({})...', ourGmsVersionName, ourGmsVersionCode)
 
+def aospRoot = System.getenv("TOP") ?: project.rootDir.absolutePath
+
 allprojects {
     apply plugin: 'idea'
 
@@ -113,6 +115,11 @@ allprojects {
     ext.vendingAppVersionCode = ourVendingVersionCode
     ext.appVersionCode = ourGmsVersionCode
     ext.isReleaseVersion = false
+
+    repositories {
+        maven { url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
+        flatDir { dirs "$aospRoot/external/microg/GmsCore/play-services-core/libs" }
+    }
 }
 
 subprojects {
