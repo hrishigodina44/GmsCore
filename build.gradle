@@ -57,6 +57,7 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+        maven { url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
     }
 
     dependencies {
@@ -118,7 +119,6 @@ allprojects {
 
     repositories {
         maven { url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
-        flatDir { dirs "$aospRoot/external/microg/GmsCore/play-services-core/libs" }
     }
 }
 
