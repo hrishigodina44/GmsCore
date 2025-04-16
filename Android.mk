@@ -37,7 +37,7 @@ $(gmscore_gradle_apk):
 
 	# Run gradle build
 	cd $(PRIVATE_GMSCORE_ROOT) && \
-	env -u JAVA_TOOL_OPTIONS GRADLE_USER_HOME=$(PRIVATE_GMSCORE_ROOT)/.gradle ./gradlew --no-daemon -p play-services-core assembleRelease
+	env -u JAVA_TOOL_OPTIONS GRADLE_USER_HOME=$(PRIVATE_GMSCORE_ROOT)/.gradle ./gradlew --offline --no-daemon -p play-services-core assembleRelease
 
 # Step 2: Copy it into AOSP out/ directory
 $(gmscore_out_apk): $(gmscore_gradle_apk)
