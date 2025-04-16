@@ -29,6 +29,9 @@ $(gmscore_gradle_apk):
 	# Set local SDK path (if needed, adjust this path to your AOSP SDK)
 	echo "sdk.dir=$(TOP)/prebuilts/sdk" > $(PRIVATE_GMSCORE_ROOT)/local.properties
 
+    # Write gradle-wrapper.properties with absolute path
+    @echo "distributionUrl=file://$(abspath $(TOP))/prebuilts/gradle_cache/wrapper/gradle-8.1.1-bin.zip" > $(PRIVATE_GMSCORE_ROOT)/gradle/wrapper/gradle-wrapper.properties
+
 	# Use local Gradle distribution and cached Maven repo only
 	cd $(PRIVATE_GMSCORE_ROOT) && \
 	env -u JAVA_TOOL_OPTIONS GRADLE_USER_HOME=$(PRIVATE_GMSCORE_ROOT)/.gradle \
