@@ -1,41 +1,43 @@
-# Copyright (c) 2015 μg Project Team
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := GmsCore
-LOCAL_MODULE_TAGS := optional
-LOCAL_PACKAGE_NAME := GmsCore
-
-gmscore_root  := $(LOCAL_PATH)
-gmscore_dir   := play-services-core
-gmscore_out   := $(TARGET_COMMON_OUT_ROOT)/obj/APPS/$(LOCAL_MODULE)_intermediates
-gmscore_build := $(gmscore_dir)/build
-gmscore_apk   := $(gmscore_build)/outputs/apk/release/play-services-core-release-unsigned.apk
-
-$(gmscore_root)/$(gmscore_apk):
-	rm -Rf $(gmscore_root)/$(gmscore_build)
-	mkdir -p $(gmscore_out)
-	ln -s $(gmscore_out) $(gmscore_root)/$(gmscore_build)
-	echo "sdk.dir=$(ANDROID_HOME)" > $(gmscore_root)/local.properties
-	cd $(gmscore_root) && git submodule update --recursive --init
-	cd $(gmscore_root)/$(gmscore_dir) && JAVA_TOOL_OPTIONS="$(JAVA_TOOL_OPTIONS) -Dfile.encoding=UTF8" ../gradlew assembleRelease
-
-LOCAL_CERTIFICATE := platform
-LOCAL_SRC_FILES := $(gmscore_apk)
 LOCAL_MODULE_CLASS := APPS
 LOCAL_MODULE_SUFFIX := $(COMMON_ANDROID_PACKAGE_SUFFIX)
+LOCAL_CERTIFICATE := platform
+LOCAL_PACKAGE_NAME := GmsCore
+
+gmscore_root := $(LOCAL_PATH)
+gmscore_dir := play-services-core
+gmscore_gradle_apk := $(gmscore_root)/$(gmscore_dir)/build/outputs/apk/release/play-services-core-release-unsigned.apk
+gmscore_out_apk := $(TARGET_COMMON_OUT_ROOT)/obj/APPS/$(LOCAL_MODULE)_intermediates/GmsCore.apk
+
+LOCAL_PREBUILT_MODULE_FILE := $(gmscore_out_apk)
+LOCAL_BUILT_MODULE_STEM := GmsCore.apk
 
 include $(BUILD_PREBUILT)
+
+# Step 1: Build the APK via Gradle
+$(gmscore_gradle_apk): PRIVATE_GMSCORE_ROOT := $(gmscore_root)
+$(gmscore_gradle_apk):
+	mkdir -p $(PRIVATE_GMSCORE_ROOT)/$(gmscore_dir)/build/outputs/apk/release
+	mkdir -p $(PRIVATE_GMSCORE_ROOT)/.gradle
+
+	# Fix the gradlew script JVM opts
+	sed -i'' -e 's/DEFAULT_JVM_OPTS=.*/DEFAULT_JVM_OPTS="-Dfile.encoding=UTF-8"/' $(PRIVATE_GMSCORE_ROOT)/gradlew || \
+	sed -i -e 's/DEFAULT_JVM_OPTS=.*/DEFAULT_JVM_OPTS="-Dfile.encoding=UTF-8"/' $(PRIVATE_GMSCORE_ROOT)/gradlew
+
+	# Write gradle.properties to force memory settings
+	echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > $(PRIVATE_GMSCORE_ROOT)/gradle.properties
+
+	# Write local.properties with sdk path
+	echo "sdk.dir=$(ANDROID_HOME)" > $(PRIVATE_GMSCORE_ROOT)/local.properties
+
+	# Run gradle build
+	cd $(PRIVATE_GMSCORE_ROOT) && \
+	env -u JAVA_TOOL_OPTIONS GRADLE_USER_HOME=$(PRIVATE_GMSCORE_ROOT)/.gradle ./gradlew --no-daemon -p play-services-core assembleRelease
+
+# Step 2: Copy it into AOSP out/ directory
+$(gmscore_out_apk): $(gmscore_gradle_apk)
+	@mkdir -p $(dir $@)
+	cp -uv $< $@
