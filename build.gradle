@@ -37,7 +37,7 @@ buildscript {
     ext.androidBuildVersionTools = '34.0.0'
 
     ext.androidMinSdk = 19
-    ext.androidTargetSdk = 29
+    ext.androidTargetSdk = 34
     ext.androidCompileSdk = 34
 
     ext.localProperties = new Properties()
@@ -118,7 +118,10 @@ allprojects {
     ext.isReleaseVersion = false
 
     repositories {
-        maven { url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
+        maven {
+            def aospRoot = System.getenv("TOP") ?: project.rootDir.absolutePath
+            url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
+
     }
 }
 
