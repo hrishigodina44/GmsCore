@@ -57,7 +57,10 @@ buildscript {
     repositories {
         mavenCentral()
         google()
-        maven { url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
+//        maven {
+//        def aospRoot = System.getenv("TOP") ?: project.rootDir.absolutePath
+//          url uri("$aospRoot/prebuilts/gradle_cache/maven_repo")
+//        }
     }
 
     dependencies {
@@ -104,8 +107,6 @@ def ourGmsVersionName = "$ourVersionBase.$gmsVersionCode" + (gitCommitCount > 0 
 def ourVendingVersionCode = 80000000 + vendingVersionCode * 100 + ourVersionMinor * 2  + (gitCommitCount > 0 || gitDirty ? 1 : 0)
 def ourVendingVersionName = "$ourVersionBase.$vendingVersionCode" + (gitCommitCount > 0 && !gitDirty ? "-$gitCommitCount" : "") + (gitDirty ? "-dirty" : "") + (gitCommitCount > 0 && !gitDirty ? " ($gitCommitId)" : "")
 logger.lifecycle('Starting build for GMS version {} ({})...', ourGmsVersionName, ourGmsVersionCode)
-
-def aospRoot = System.getenv("TOP") ?: project.rootDir.absolutePath
 
 allprojects {
     apply plugin: 'idea'
