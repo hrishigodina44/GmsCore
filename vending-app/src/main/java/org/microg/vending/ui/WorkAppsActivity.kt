@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.android.vending.buildRequestHeaders
+import com.android.vending.installer.InstallService
 import com.android.vending.installer.uninstallPackage
 import kotlinx.coroutines.runBlocking
 import org.microg.gms.auth.AuthConstants
@@ -47,16 +48,15 @@ import org.microg.vending.billing.core.GooglePlayApi.Companion.URL_ITEM_DETAILS
 import org.microg.vending.billing.core.HttpClient
 import org.microg.vending.billing.createDeviceEnvInfo
 import org.microg.vending.billing.proto.GoogleApiResponse
-import org.microg.vending.enterprise.EnterpriseApp
 import org.microg.vending.enterprise.App
 import org.microg.vending.enterprise.AppState
+import org.microg.vending.enterprise.EnterpriseApp
 import org.microg.vending.enterprise.Installed
 import org.microg.vending.enterprise.NotCompatible
 import org.microg.vending.enterprise.NotInstalled
 import org.microg.vending.enterprise.Pending
 import org.microg.vending.enterprise.UpdateAvailable
 import org.microg.vending.enterprise.proto.AppInstallPolicy
-import com.android.vending.installer.InstallService
 import org.microg.vending.proto.AppMeta
 import org.microg.vending.proto.GetItemsRequest
 import org.microg.vending.proto.RequestApp
@@ -211,7 +211,7 @@ class WorkAppsActivity : ComponentActivity() {
                     ).getItemsResponses.mapNotNull { it.response }.associate { item ->
                         val packageName = item.meta!!.packageName!!
                         val installedDetails = this@WorkAppsActivity.packageManager.getInstalledPackages(0).find {
-                            it.applicationInfo.packageName == packageName
+                            it.applicationInfo?.packageName == packageName
                         }
 
                         val available = item.offer?.delivery != null

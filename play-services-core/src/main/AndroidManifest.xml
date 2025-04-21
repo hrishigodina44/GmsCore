@@ -738,6 +738,7 @@
             android:icon="@mipmap/ic_app_settings"
             android:label="Legacy microG Settings"
             android:process=":ui"
+            android:exported="false"
             android:roundIcon="@mipmap/ic_app_settings"
             android:taskAffinity="org.microg.gms.settings" />
 
@@ -778,18 +779,21 @@
             android:name="org.microg.gms.ui.AskPushPermission"
             android:excludeFromRecents="true"
             android:process=":ui"
+            android:exported="false"
             android:theme="@style/Theme.App.Translucent" />
 
         <activity
             android:name="org.microg.gms.ui.GoogleMoreFragment$AsActivity"
             android:label="@string/gms_settings_name"
             android:process=":ui"
+            android:exported="false"
             android:taskAffinity="org.microg.gms.settings" />
 
         <activity
             android:name="org.microg.gms.ui.SelfCheckFragment$AsActivity"
             android:label="@string/self_check_title"
             android:process=":ui"
+            android:exported="false"
             android:taskAffinity="org.microg.gms.settings" />
 
         <activity

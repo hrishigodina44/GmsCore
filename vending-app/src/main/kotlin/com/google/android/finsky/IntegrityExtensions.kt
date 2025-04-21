@@ -11,7 +11,6 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.Signature
-import android.os.Binder
 import android.os.Bundle
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -121,13 +120,13 @@ val SIGNING_FLAGS = if (Build.VERSION.SDK_INT >= 28) {
 val PackageInfo.signaturesCompat: Array<Signature>
     get() {
         return if (Build.VERSION.SDK_INT >= 28) {
-            if (signingInfo.hasMultipleSigners()) {
-                signingInfo.apkContentsSigners
+            if (signingInfo?.hasMultipleSigners() == true) {
+                signingInfo?.apkContentsSigners ?: emptyArray()
             } else {
-                signingInfo.signingCertificateHistory
+                signingInfo?.signingCertificateHistory ?: emptyArray()
             }
         } else {
-            @Suppress("DEPRECATION") signatures
+            @Suppress("DEPRECATION") signatures!!
         }
     }
 
