@@ -37,6 +37,7 @@
 
         <activity-alias
             android:name="org.microg.gms.ui.SettingsActivity"
+            android:exported="true"
             android:targetActivity="org.microg.gms.ui.MainSettingsActivity"
             tools:node="remove" />
 

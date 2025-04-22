@@ -19,7 +19,7 @@
     <application>
         <service
             android:name=".privileged.Fido2PrivilegedService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.fido.fido2.privileged.START" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -27,7 +27,7 @@
         </service>
         <service
             android:name=".regular.Fido2AppService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.fido.fido2.regular.START" />
                 <category android:name="android.intent.category.DEFAULT" />
