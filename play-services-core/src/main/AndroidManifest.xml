@@ -719,13 +719,13 @@
         <!-- microG Settings activity-alias shown in Launcher -->
         <activity-alias
             android:name="org.microg.gms.ui.SettingsActivity"
+            android:exported="true"
             android:icon="@mipmap/ic_app_settings"
             android:label="@string/gms_settings_name"
             android:roundIcon="@mipmap/ic_app_settings"
             android:process=":ui"
             android:targetActivity="org.microg.gms.ui.MainSettingsActivity"
-            android:taskAffinity="org.microg.gms.settings"
-            android:exported="true">
+            android:taskAffinity="org.microg.gms.settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -745,12 +745,12 @@
         <!-- microG Settings embedded in System Settings on SDK 23 and newer -->
         <activity-alias
             android:name="org.microg.gms.ui.SettingsActivityLink"
+            android:exported="true"
             android:icon="@mipmap/ic_app_settings"
             android:label="@string/gms_settings_name"
             android:process=":ui"
             android:targetActivity="org.microg.gms.ui.MainSettingsActivity"
-            android:taskAffinity="org.microg.gms.settings"
-            android:exported="true">
+            android:taskAffinity="org.microg.gms.settings">
             <intent-filter>
                 <action android:name="com.android.settings.action.EXTRA_SETTINGS" />
             </intent-filter>
