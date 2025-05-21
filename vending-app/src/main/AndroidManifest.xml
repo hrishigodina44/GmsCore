@@ -92,7 +92,7 @@
 
         <service
             android:name="com.google.android.finsky.externalreferrer.GetInstallReferrerService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.finsky.BIND_GET_INSTALL_REFERRER_SERVICE" />
             </intent-filter>
@@ -160,7 +160,7 @@
         </activity>
 
         <service android:name="com.google.android.finsky.splitinstallservice.SplitInstallService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.play.core.splitinstall.BIND_SPLIT_INSTALL_SERVICE"/>
             </intent-filter>
@@ -168,7 +168,7 @@
 
         <service
             android:name="com.android.vending.billing.InAppBillingService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.android.vending.billing.InAppBillingService.BIND" />
             </intent-filter>
@@ -188,7 +188,7 @@
         <service
             android:name="com.google.android.finsky.assetmoduleservice.AssetModuleService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.play.core.assetmoduleservice.BIND_ASSET_MODULE_SERVICE" />
             </intent-filter>
@@ -219,7 +219,7 @@
             tools:targetApi="21" />
 
         <receiver android:name="org.microg.vending.WorkAccountChangedReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="org.microg.vending.WORK_ACCOUNT_CHANGED" />
             </intent-filter>
@@ -227,7 +227,7 @@
 
         <service
             android:name="com.google.android.finsky.integrityservice.IntegrityService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.play.core.integrityservice.BIND_INTEGRITY_SERVICE" />
             </intent-filter>
@@ -235,7 +235,7 @@
 
         <service
             android:name="com.google.android.finsky.expressintegrityservice.ExpressIntegrityService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.play.core.expressintegrityservice.BIND_EXPRESS_INTEGRITY_SERVICE"/>
             </intent-filter>
@@ -256,7 +256,7 @@
 
         <service android:name="com.google.android.finsky.installservice.DevTriggeredUpdateService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.play.core.install.BIND_UPDATE_SERVICE"/>
             </intent-filter>

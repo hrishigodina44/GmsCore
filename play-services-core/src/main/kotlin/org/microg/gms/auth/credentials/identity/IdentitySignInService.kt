@@ -38,11 +38,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.microg.gms.BaseService
 import org.microg.gms.auth.AuthConstants
+import org.microg.gms.auth.credentials.FEATURES
 import org.microg.gms.auth.signin.ACTION_ASSISTED_SIGN_IN
 import org.microg.gms.auth.signin.BEGIN_SIGN_IN_REQUEST
-import org.microg.gms.auth.signin.GET_SIGN_IN_INTENT_REQUEST
-import org.microg.gms.auth.credentials.FEATURES
 import org.microg.gms.auth.signin.CLIENT_PACKAGE_NAME
+import org.microg.gms.auth.signin.GET_SIGN_IN_INTENT_REQUEST
 import org.microg.gms.auth.signin.GOOGLE_SIGN_IN_OPTIONS
 import org.microg.gms.auth.signin.performSignOut
 import org.microg.gms.common.GmsService
@@ -74,6 +74,12 @@ class IdentitySignInServiceImpl(private val context: Context, private val client
         Log.d(TAG, "method 'beginSignIn' called")
         Log.d(TAG, "request-> $request")
         if (request.googleIdTokenRequestOptions.isSupported) {
+            val accounts = AccountManager.get(context).getAccountsByType(AuthConstants.DEFAULT_ACCOUNT_TYPE)
+            if (accounts.isEmpty()) {
+                Log.d(TAG, "accounts is empty, return CANCELED ")
+                callback.onResult(Status.CANCELED, null)
+                return
+            }
             if (request.googleIdTokenRequestOptions.serverClientId.isNullOrEmpty()) {
                 Log.d(TAG, "serverClientId is empty, return CANCELED ")
                 callback.onResult(Status.CANCELED, null)

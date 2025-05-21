@@ -16,12 +16,12 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
 import android.opengl.GLES10
+import android.os.Build.VERSION.SDK_INT
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import android.util.Base64
 import android.util.DisplayMetrics
 import android.util.Log
-import android.os.Build.VERSION.SDK_INT
 import android.view.WindowManager
 import org.microg.gms.common.Constants
 import org.microg.gms.profile.Build
@@ -296,7 +296,7 @@ object DeviceSyncInfo {
             if (activeAdmins != null) {
                 for (componentName in activeAdmins) {
                     val packageName = componentName.packageName
-                    val packageInfo: PackageInfo? = context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+                    val packageInfo: PackageInfo = context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
                     val isDeviceOwner = devicePolicyManager.isDeviceOwnerApp(packageName)
                     var isProfileOwner = false
                     if (SDK_INT >= 21) {
@@ -307,8 +307,8 @@ object DeviceSyncInfo {
                     val profileInfo = ProfileInfo.Builder()
                         .pkgName(componentName.packageName)
                         .policyType(policyType)
-                        .pkgSHA1(calculateSHA(packageInfo!!.signatures[0].toByteArray(), "SHA1"))
-                        .pkgSHA256(calculateSHA(packageInfo.signatures[0].toByteArray(), "SHA256")).build()
+                        .pkgSHA1(calculateSHA(packageInfo.signatures!![0].toByteArray(), "SHA1"))
+                        .pkgSHA256(calculateSHA(packageInfo.signatures!![0].toByteArray(), "SHA256")).build()
                     if (isProfileOwner) {
                         enterprisePropertiesPayload.profileOwner(profileInfo)
                     }

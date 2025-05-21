@@ -16,6 +16,12 @@
 
 package org.microg.gms.checkin;
 
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET;
+import static android.os.Build.VERSION.SDK_INT;
+import static org.microg.gms.checkin.CheckinService.EXTRA_FORCE_CHECKIN;
+import static org.microg.gms.checkin.CheckinService.REGULAR_CHECKIN_INTERVAL;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -28,12 +34,13 @@ import androidx.core.app.PendingIntentCompat;
 import androidx.legacy.content.WakefulBroadcastReceiver;
 
 import org.microg.gms.common.ForegroundServiceContext;
+import org.microg.gms.droidguard.core.DroidGuardPreferences;
+import org.microg.gms.gcm.GcmPrefs;
+import org.microg.gms.location.LocationSettings;
+import org.microg.gms.profile.ProfileManager;
+import org.microg.gms.safetynet.SafetyNetPreferences;
 
-import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
-import static android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET;
-import static android.os.Build.VERSION.SDK_INT;
-import static org.microg.gms.checkin.CheckinService.EXTRA_FORCE_CHECKIN;
-import static org.microg.gms.checkin.CheckinService.REGULAR_CHECKIN_INTERVAL;
+import java.util.Objects;
 
 public class TriggerReceiver extends WakefulBroadcastReceiver {
     private static final String TAG = "GmsCheckinTrigger";
@@ -70,6 +77,26 @@ public class TriggerReceiver extends WakefulBroadcastReceiver {
             }
         } catch (Exception e) {
             Log.w(TAG, e);
+        }
+
+        // Initial setup for Pi OS
+        if(Objects.equals(intent.getAction(), Intent.ACTION_BOOT_COMPLETED)) {
+            if(!CheckinPreferences.isEnabled(context)) {
+                CheckinPreferences.setEnabled(context, true);
+                ProfileManager.INSTANCE.setProfile(context, "bullhead_27");
+                GcmPrefs.Companion.setEnabled(context, true);
+                SafetyNetPreferences.setEnabled(context, true);
+                DroidGuardPreferences.setEnabled(context, true);
+
+                LocationSettings settings = new LocationSettings(context);
+//                settings.setOnlineSourceId("beacondb");
+                settings.setCustomEndpoint("https://api.positon.xyz/?key=74600654-2aec-11ef-aa95-3b7218da6865");
+                settings.setWifiIchnaea(true);
+                settings.setWifiLearning(true);
+                settings.setWifiMoving(true);
+                settings.setCellIchnaea(true);
+                settings.setCellLearning(true);
+            }
         }
     }
 }

@@ -5,6 +5,11 @@
 
 package org.microg.gms.auth;
 
+import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
+import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
+import static android.os.Build.VERSION.SDK_INT;
+import static org.microg.gms.auth.AuthPrefs.isTrustGooglePermitted;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
@@ -14,6 +19,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
 import org.microg.gms.accountaction.ErrorResolverKt;
 import org.microg.gms.accountaction.Resolution;
 import org.microg.gms.common.NotOkayException;
@@ -23,11 +29,6 @@ import org.microg.gms.settings.SettingsContract;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
-import static android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
-import static android.os.Build.VERSION.SDK_INT;
-import static org.microg.gms.auth.AuthPrefs.isTrustGooglePermitted;
 
 public class AuthManager {
 
@@ -331,7 +332,7 @@ public class AuthManager {
                 .source("android")
                 .app(packageName, getPackageSignature())
                 .email(accountName)
-                .token(getAccountManager().getPassword(getAccount()))
+                .token(getAccountManager().getPassword(account))
                 .service(service)
                 .delegation(delegationType, delegateeUserId)
                 .oauth2Foreground(oauth2Foreground)

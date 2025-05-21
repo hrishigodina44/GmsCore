@@ -7,7 +7,7 @@
     <application>
         <service
             android:name="org.microg.gms.threadnetwork.ThreadNetworkService"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.threadnetwork.service.START" />
             </intent-filter>

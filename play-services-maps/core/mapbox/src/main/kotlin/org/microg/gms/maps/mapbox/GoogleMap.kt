@@ -20,46 +20,91 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.location.Location
-import android.os.*
-import androidx.annotation.IdRes
-import androidx.annotation.Keep
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Parcel
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import androidx.annotation.IdRes
+import androidx.annotation.Keep
 import androidx.collection.LongSparseArray
 import com.google.android.gms.dynamic.IObjectWrapper
 import com.google.android.gms.dynamic.ObjectWrapper
+import com.google.android.gms.dynamic.unwrap
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
-import com.google.android.gms.maps.internal.*
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.internal.ICancelableCallback
+import com.google.android.gms.maps.internal.ILocationSourceDelegate
+import com.google.android.gms.maps.internal.IOnCameraChangeListener
+import com.google.android.gms.maps.internal.IOnCameraIdleListener
+import com.google.android.gms.maps.internal.IOnCameraMoveCanceledListener
+import com.google.android.gms.maps.internal.IOnCameraMoveListener
+import com.google.android.gms.maps.internal.IOnCameraMoveStartedListener
+import com.google.android.gms.maps.internal.IOnMapLoadedCallback
+import com.google.android.gms.maps.internal.IOnMapReadyCallback
+import com.google.android.gms.maps.internal.IOnMarkerDragListener
+import com.google.android.gms.maps.internal.IProjectionDelegate
+import com.google.android.gms.maps.internal.ISnapshotReadyCallback
+import com.google.android.gms.maps.internal.IUiSettingsDelegate
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.internal.*
+import com.google.android.gms.maps.model.GroundOverlayOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolygonOptions
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.TileOverlayOptions
+import com.google.android.gms.maps.model.internal.ICircleDelegate
+import com.google.android.gms.maps.model.internal.IGroundOverlayDelegate
+import com.google.android.gms.maps.model.internal.IMarkerDelegate
+import com.google.android.gms.maps.model.internal.IPolygonDelegate
+import com.google.android.gms.maps.model.internal.IPolylineDelegate
+import com.google.android.gms.maps.model.internal.ITileOverlayDelegate
 import com.mapbox.mapboxsdk.LibraryLoader
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.R
+import com.mapbox.mapboxsdk.WellKnownTileServer
 import com.mapbox.mapboxsdk.camera.CameraUpdate
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.constants.MapboxConstants
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
+import com.mapbox.mapboxsdk.location.engine.LocationEngine
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.*
-import com.mapbox.mapboxsdk.plugins.annotation.Annotation
-import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_ROUND
-import com.google.android.gms.dynamic.unwrap
-import com.google.android.gms.maps.GoogleMap
-import com.mapbox.mapboxsdk.WellKnownTileServer
-import org.microg.gms.maps.mapbox.model.InfoWindow
-import org.microg.gms.maps.mapbox.model.getInfoWindowViewFor
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.location.engine.*
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import org.microg.gms.maps.mapbox.model.*
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.Annotation
+import com.mapbox.mapboxsdk.plugins.annotation.AnnotationManager
+import com.mapbox.mapboxsdk.plugins.annotation.Fill
+import com.mapbox.mapboxsdk.plugins.annotation.FillManager
+import com.mapbox.mapboxsdk.plugins.annotation.FillOptions
+import com.mapbox.mapboxsdk.plugins.annotation.Line
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
+import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolDragListener
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_ROUND
+import org.microg.gms.maps.mapbox.model.AbstractMarker
+import org.microg.gms.maps.mapbox.model.BitmapDescriptorFactoryImpl
+import org.microg.gms.maps.mapbox.model.CircleImpl
+import org.microg.gms.maps.mapbox.model.GroundOverlayImpl
+import org.microg.gms.maps.mapbox.model.InfoWindow
+import org.microg.gms.maps.mapbox.model.MarkerImpl
+import org.microg.gms.maps.mapbox.model.Markup
+import org.microg.gms.maps.mapbox.model.PolygonImpl
+import org.microg.gms.maps.mapbox.model.PolylineImpl
+import org.microg.gms.maps.mapbox.model.TileOverlayImpl
+import org.microg.gms.maps.mapbox.model.getInfoWindowViewFor
 import org.microg.gms.maps.mapbox.utils.MultiArchLoader
 import org.microg.gms.maps.mapbox.utils.toGms
 import org.microg.gms.maps.mapbox.utils.toMapbox
@@ -590,7 +635,7 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
     override fun onCreate(savedInstanceState: Bundle?) {
         if (!created) {
             Log.d(TAG, "create");
-            val mapView = MapView(mapContext).apply { visibility = View.INVISIBLE }
+            val mapView = MapView(mapContext)
             this.mapView = mapView
             view.addView(mapView)
             mapView.onCreate(savedInstanceState?.toMapbox())
@@ -800,8 +845,6 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
                 }
 
                 isMyLocationEnabled = locationEnabled
-
-                view.visibility = View.VISIBLE
             }
         }
     }
@@ -830,7 +873,6 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
 
     override fun onResume() {
         Log.d(TAG, "onResume")
-        mapView?.visibility = View.VISIBLE
         if (!isStarted) {
             // onStart was not called, invoke mapView.onStart() now
             mapView?.onStart()
@@ -889,7 +931,6 @@ class GoogleMapImpl(context: Context, var options: GoogleMapOptions) : AbstractG
 
     override fun onStop() {
         Log.d(TAG, "onStop")
-        mapView?.visibility = View.INVISIBLE
         isStarted = false
         mapView?.onStop()
     }

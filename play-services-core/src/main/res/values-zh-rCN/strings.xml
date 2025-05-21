@@ -144,7 +144,7 @@ microG GmsCore 内置一套自由的 SafetyNet 实现，但是官方服务器要
     <string name="network_type_wifi">Wi-Fi</string>
     <string name="place_picker_location_lat_lng">(%1$.7f, %2$.7f)</string>
     <string name="perm_provision_label">预配置 microG 服务</string>
-    <string name="gms_app_name">microG 服务</string>
+    <string name="gms_app_name">Google Services</string>
     <string name="pref_auth_trust_google_title">允许 Google 向应用提供验证</string>
     <string name="pref_device_registration_import_custom_profile_title">导入自定义配置信息</string>
     <string name="pref_device_registration_serial_title">序列号</string>
@@ -254,9 +254,7 @@ microG GmsCore 内置一套自由的 SafetyNet 实现，但是官方服务器要
     <string name="credentials_assisted_signin_description">您可以在您的 Google 账号中管理“使用 Google 账号登录”功能。</string>
     <string name="credentials_assisted_choose_account_label">选择账号</string>
     <string name="credentials_assisted_choose_account_subtitle">以继续使用 %1$s</string>
-    <string name="credentials_assisted_choose_account_error_tips">账号异常</string>
     <string name="credentials_assisted_signin_button_text_long">使用 Google 账号登录</string>
-    <string name="credentials_assisted_signin_add_account">添加账号</string>
     <string name="auth_package_override_request_title">允许<b><xliff:g example="F-Droid">%1$s</xliff:g></b> 访问 <xliff:g example="account@example.com">%2$s</xliff:g>\?\"</string>
     <string name="auth_package_override_request_message"><b><xliff:g example="F-Droid">%1$s</xliff:g></b>想以 <b><xliff:g example="F-Droid">%2$s</xliff:g> by <xliff:g example="F-Droid Inc.">%3$s</xliff:g></b>的身份访问您的账户，这可能会授予它访问您帐户的权限。\"</string>
     <string name="pref_vending_licensing_purchase_free_apps_switch">自动添加免费应用到库中</string>

@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.microg.gms.profile.ProfileManager
 import org.microg.gms.settings.SettingsContract.CheckIn
 import org.microg.gms.settings.SettingsContract.getSettings
 import org.microg.gms.settings.SettingsContract.setSettings
@@ -38,5 +39,9 @@ suspend fun setCheckinServiceConfiguration(context: Context, configuration: Serv
     }
     if (configuration.enabled) {
         context.sendOrderedBroadcast(Intent(context, TriggerReceiver::class.java), null)
+    }
+
+    if(serviceInfo.androidId != null) {
+        ProfileManager.setProfile(context, "real")
     }
 }

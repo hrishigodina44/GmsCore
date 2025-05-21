@@ -32,13 +32,13 @@ buildscript {
     ext.wireVersion = '4.9.9'
     ext.tinkVersion = '1.13.0'
 
-    ext.androidBuildGradleVersion = '8.2.2'
+    ext.androidBuildGradleVersion = '8.1.1'
 
     ext.androidBuildVersionTools = '34.0.0'
 
     ext.androidMinSdk = 19
     ext.androidTargetSdk = 29
-    ext.androidCompileSdk = 34
+    ext.androidCompileSdk = 35
 
     ext.localProperties = new Properties()
 
@@ -57,6 +57,10 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+//        maven {
+//        def aospRoot = System.getenv("TOP") ?: project.rootDir.absolutePath
+//          url uri("$aospRoot/prebuilts/gradle_cache/maven_repo")
+//        }
     }
 
     dependencies {
@@ -75,9 +79,9 @@ def gmsVersion = "25.09.32"
 def gmsVersionCode = Integer.parseInt(gmsVersion.replaceAll('\\.', ''))
 def vendingVersion = "40.2.26"
 def vendingVersionCode = Integer.parseInt(vendingVersion.replaceAll('\\.', ''))
-def gitVersionBase = !ignoreGit ? execResult('git', 'describe', '--tags', '--abbrev=0', '--match=v[0-9]*').trim().substring(1) : "v0.0.0.$gmsVersionCode"
-def gitCommitCount = !ignoreGit ? Integer.parseInt(execResult('git', 'rev-list', '--count', "v$gitVersionBase..HEAD").trim()) : 0
-def gitCommitId = !ignoreGit ? execResult('git', 'show-ref', '--abbrev=7', '--head', 'HEAD').trim().split(' ')[0] : '0000000'
+def gitVersionBase = "v0.0.0.${gmsVersionCode}"
+def gitCommitCount = 0
+def gitCommitId = '0000000'
 def gitDirty = false
 if (!ignoreGit) {
   execResult('git', 'status', '--porcelain').lines().each { stat ->
@@ -113,6 +117,13 @@ allprojects {
     ext.vendingAppVersionCode = ourVendingVersionCode
     ext.appVersionCode = ourGmsVersionCode
     ext.isReleaseVersion = false
+
+    repositories {
+        maven {
+            def aospRoot = System.getenv("TOP") ?: project.rootDir.absolutePath
+            url uri("$aospRoot/prebuilts/gradle_cache/maven_repo") }
+
+    }
 }
 
 subprojects {

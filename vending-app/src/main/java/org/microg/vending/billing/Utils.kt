@@ -25,28 +25,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import com.android.billingclient.api.BillingClient.BillingResponseCode
 import org.microg.gms.profile.Build
-import org.microg.gms.profile.ProfileManager
 import org.microg.gms.utils.digest
 import org.microg.gms.utils.getExtendedPackageInfo
 import org.microg.gms.utils.toBase64
-import org.microg.vending.billing.core.*
-import java.util.*
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.Set
-import kotlin.collections.any
-import kotlin.collections.filter
-import kotlin.collections.firstOrNull
-import kotlin.collections.joinToString
-import kotlin.collections.map
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
+import org.microg.vending.billing.core.ClientInfo
+import org.microg.vending.billing.core.DeviceEnvInfo
+import org.microg.vending.billing.core.DisplayMetrics
+import org.microg.vending.billing.core.LocationData
+import org.microg.vending.billing.core.NetworkData
+import org.microg.vending.billing.core.TelephonyData
+import java.util.Locale
 import kotlin.collections.set
-import kotlin.collections.toByteArray
-import kotlin.collections.toList
-import kotlin.collections.toSet
-import kotlin.collections.toTypedArray
 
 fun Map<String, Any?>.toBundle(): Bundle = bundleOf(*this.toList().toTypedArray())
 
@@ -314,7 +303,7 @@ fun createDeviceEnvInfo(context: Context): DeviceEnvInfo? {
             userAgent = getUserAgent(),
             gpLastUpdateTime = packageInfo.lastUpdateTime,
             gpFirstInstallTime = packageInfo.firstInstallTime,
-            gpSourceDir = packageInfo.applicationInfo.sourceDir!!,
+            gpSourceDir = packageInfo.applicationInfo?.sourceDir!!,
             device = Build.DEVICE ?: "",
             displayMetrics = getDisplayInfo(context),
             telephonyData = getTelephonyData(context),

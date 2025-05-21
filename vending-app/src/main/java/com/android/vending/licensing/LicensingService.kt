@@ -115,7 +115,7 @@ class LicensingService : Service() {
             }
 
             // Verify caller identity
-            if (packageInfo.applicationInfo.uid != callingUid) {
+            if (packageInfo.applicationInfo?.uid != callingUid) {
                 Log.e(
                     TAG,
                     "an app illegally tried to request licenses for another app (caller: $callingUid)"
@@ -165,12 +165,14 @@ class LicensingService : Service() {
             try {
                 Log.e(TAG, "not checking license, as user is not signed in")
 
-                packageManager.getPackageInfo(packageName, 0).let {
-                    sendLicenseServiceNotification(
-                        packageName,
-                        packageManager.getApplicationLabel(it.applicationInfo),
-                        it.applicationInfo.uid
-                    )
+                packageManager.getPackageInfo(packageName, 0)?.let {
+                    it.applicationInfo?.let { applicationInfo ->
+                        sendLicenseServiceNotification(
+                            packageName,
+                            packageManager.getApplicationLabel(applicationInfo),
+                            applicationInfo.uid
+                        )
+                    }
                 }
 
             } catch (e: PackageManager.NameNotFoundException) {

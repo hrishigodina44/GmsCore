@@ -12,11 +12,7 @@ import android.database.Cursor
 import android.net.Uri
 import androidx.core.content.contentValuesOf
 import androidx.core.net.toUri
-import com.android.volley.NetworkResponse
-import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.Response.success
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -287,15 +283,6 @@ suspend fun performGamesSignIn(
             )
         }
 
-        suspend fun fetchGamePlayer(): JSONObject? {
-            val gameAuthManager = AuthManager(context, account.name, GAMES_PACKAGE_NAME, authManager.service)
-            if (gameAuthManager.packageSignature == null) gameAuthManager.packageSignature = Constants.GMS_PACKAGE_SIGNATURE_SHA1
-            gameAuthManager.isPermitted = authManager.isPermitted
-            authResponse = withContext(Dispatchers.IO) { gameAuthManager.requestAuth(true) }
-            if (authResponse.auth == null) return null
-            return runCatching { fetchSelfPlayer() }.getOrNull()
-        }
-
         val result = try {
             fetchSelfPlayer()
         } catch (e: Exception) {
@@ -303,15 +290,16 @@ suspend fun performGamesSignIn(
                 val statusCode = e.networkResponse?.statusCode
                 when (statusCode) {
                     404 -> {
-                        try {
-                            registerForGames(context, account, queue)
-                            fetchSelfPlayer()
-                        } catch (e : Exception){
-                            fetchGamePlayer() ?: return false
-                        }
+                        registerForGames(context, account, queue)
+                        fetchSelfPlayer()
                     }
                     403 -> {
-                        fetchGamePlayer() ?: return false
+                        val gameAuthManager = AuthManager(context, account.name, GAMES_PACKAGE_NAME, authManager.service)
+                        if (gameAuthManager.packageSignature == null) gameAuthManager.packageSignature = Constants.GMS_PACKAGE_SIGNATURE_SHA1
+                        gameAuthManager.isPermitted = authManager.isPermitted
+                        authResponse = withContext(Dispatchers.IO) { gameAuthManager.requestAuth(true) }
+                        if (authResponse.auth == null) return false
+                        fetchSelfPlayer()
                     }
                     else -> throw e
                 }
@@ -322,37 +310,4 @@ suspend fun performGamesSignIn(
         GamesConfigurationService.setPlayer(context, account, result.toString())
     }
     return true
-}
-
-suspend fun notifyGamePlayed(
-    context: Context,
-    packageName: String,
-    account: Account,
-    permitted: Boolean = false,
-    queue: RequestQueue = singleInstanceOf { Volley.newRequestQueue(context.applicationContext) }
-) {
-    val authManager = AuthManager(context, account.name, packageName, SERVICE_GAMES_LITE)
-    if (permitted) authManager.isPermitted = true
-    var authResponse = withContext(Dispatchers.IO) { authManager.requestAuthWithBackgroundResolution(true) }
-    if (authResponse.auth == null) throw RuntimeException("authToken is null")
-    return suspendCoroutine { continuation ->
-        queue.add(object : Request<Unit>(Method.POST, "https://www.googleapis.com/games/v1/applications/played", {
-            continuation.resumeWithException(it)
-        }) {
-            override fun parseNetworkResponse(response: NetworkResponse): Response<Unit> {
-                if (response.statusCode == 204) return success(Unit, null)
-                return Response.error(VolleyError(response))
-            }
-
-            override fun deliverResponse(response: Unit) {
-                continuation.resume(response)
-            }
-
-            override fun getHeaders(): MutableMap<String, String> {
-                return mutableMapOf(
-                    "Authorization" to "OAuth ${authResponse.auth}"
-                )
-            }
-        })
-    }
 }
