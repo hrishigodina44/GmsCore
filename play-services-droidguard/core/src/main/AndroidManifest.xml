@@ -11,7 +11,7 @@
         <service
             android:name=".DroidGuardService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:process="com.google.android.gms.unstable">
             <intent-filter>
                 <action android:name="com.google.android.gms.droidguard.service.INIT" />

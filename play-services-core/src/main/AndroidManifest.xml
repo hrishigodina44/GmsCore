@@ -973,7 +973,7 @@
 
         <!-- feedback -->
 
-        <service android:name="org.microg.gms.feedback.FeedbackService" android:exported="false">
+        <service android:name="org.microg.gms.feedback.FeedbackService" android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.feedback.internal.IFeedbackService" />
             </intent-filter>
